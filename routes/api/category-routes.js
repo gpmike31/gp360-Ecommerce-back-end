@@ -12,8 +12,8 @@ router.get('/', async (req, res) => {
     // be sure to include its associated Products
     res.json(categories)
   }
-  catch (err) {
-    res.status(500).json(err);
+  catch (error) {
+    res.status(500).json(error);
   }
 });
 
@@ -28,7 +28,7 @@ router.get('/:id', async (req, res) => {
 
   res.json(categories)
   }
-  catch (err) {
+  catch (error) {
     res.status(500).json(err);
   }
   // be sure to include its associated Products
@@ -41,8 +41,8 @@ router.post('/', async (req, res) => {
 
     res.json(categories);
   }
-  catch(err) {
-    res.status(500).json(err);
+  catch(error) {
+    res.status(500).json(error);
   }
 });
 
@@ -53,17 +53,26 @@ router.put('/:id', async (req, res) => {
       where: {
         id: req.params.id
       }
-    } );
-
+    })
     
-  }
-  catch(err) {
-
-  }
+    res.json(categories)
+   } catch(error) {
+      res.status(500).json(error);
+   }
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', async (req, res) => {
   // delete a category by its `id` value
+  try {
+    const categories = await Category.destroy({
+      where: {
+        id: req.params.id
+      }
+    })
+    res.json(categories)
+    } catch(error) {
+      res.status(500).json(error)
+    }
 });
 
 module.exports = router;
