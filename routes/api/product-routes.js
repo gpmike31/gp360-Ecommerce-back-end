@@ -18,7 +18,7 @@ router.get('/', async (req, res) => {
   // be sure to include its associated Category and Tag data
 
   catch (error) {
-    res.status(500).json(console.error());
+    res.status(500).json(error);
   }
 });
 
