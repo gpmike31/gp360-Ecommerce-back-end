@@ -1,6 +1,5 @@
 const router = require('express').Router();
-const res = require('express/lib/response');
-const { Tag, Product, ProductTag, Tag } = require('../../models');
+const { Tag, Product, ProductTag } = require('../../models');
 
 // The `/api/tags` endpoint
 
@@ -9,35 +8,31 @@ router.get('/', async (req, res) => {
   // be sure to include its associated Product data
   try {
     const tags = await Tag.findAll({
-      include : [Tag, {
+      include: [ {
         model: Product,
         through: ProductTag
       }]
     })
     res.json(tags)
   }
-  
-
-  catch(error) {
-    res.status(500).json(error);
+  catch (err) {
+    res.status(500).json(err);
   }
 });
 
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   // find a single tag by its `id`
   // be sure to include its associated Product data
   try {
-    const tags = await Tag.findOne({
-      where:
-      {id: req.params.id},
-      include: [Tag,{
+    const tag = await Tag.findByPk(req.params.id, {
+      include: [ {
         model: Product,
         through: ProductTag
       }]
     })
-    res.json(tags)
+    res.json(tag)
   } catch (error) {
-      res.status(500).json(error);
+    res.status(500).json(error)
   }
 });
 
@@ -48,7 +43,7 @@ router.post('/', async (req, res) => {
     res.json(newTag);
   } 
   catch (error) {
-    res.status(500).json(error); 
+   res.status(500).json(error) 
   }
 });
 
@@ -62,7 +57,7 @@ router.put('/:id', async (req, res) => {
     })
     res.json(updateTag)
   } catch (error) {
-    res.status(500).json(error);
+    res.status(500).json(error)
   }
 });
 
@@ -76,7 +71,7 @@ router.delete('/:id', async (req, res) => {
     })
     res.json(deleteTag)
   } catch (error) {
-    res.status(500).json(error);
+    res.status(500).json(error)
   }
 });
 
