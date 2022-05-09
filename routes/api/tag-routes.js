@@ -1,78 +1,56 @@
 const router = require('express').Router();
-const { Tag, Product, ProductTag } = require('../../models');
+const { Tag, Product, ProductTag, Category } = require('../../models');
 
 // The `/api/tags` endpoint
 
-router.get('/', async (req, res) => {
+router.get('/', (req, res) => {
   // find all tags
-  // be sure to include its associated Product data
-  try {
-    const tags = await Tag.findAll({
-      include: [ {
+  Tag.findAll({
+    include: {
         model: Product,
-        through: ProductTag
-      }]
-    })
-    res.json(tags)
-  }
-  catch (err) {
-    res.status(500).json(err);
-  }
+        attributes: ['product_name', 'price', 'stock', 'category_id']
+    }
+})
+    .then(results => res.json(results))
+  // be sure to include its associated Product data
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', (req, res) => {
   // find a single tag by its `id`
+  Tag.findOne({
+    where: {
+      id: req.params.id
+    },
+    include: [Product]
+  })
+    .then(results => res.json(results))
   // be sure to include its associated Product data
-  try {
-    const tag = await Tag.findByPk(req.params.id, {
-      include: [ {
-        model: Product,
-        through: ProductTag
-      }]
-    })
-    res.json(tag)
-  } catch (error) {
-    res.status(500).json(error)
-  }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', (req, res) => {
   // create a new tag
-  try {
-    const newTag = await Tag.create(req.body)
-    res.json(newTag);
-  } 
-  catch (error) {
-   res.status(500).json(error) 
-  }
+  Tag.create(req.body)
+    .then(results => res.json(results))
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', (req, res) => {
   // update a tag's name by its `id` value
-  try {
-    const updateTag = await Tag.update(req.body, {
-      where: {
-        id: req.params.id
-      }
-    })
-    res.json(updateTag)
-  } catch (error) {
-    res.status(500).json(error)
-  }
+  Tag.update(req.body, {
+    where: {
+      id: req.params.id
+    }
+  })
+  .then((results) => { res.json(results)})
 });
 
-router.delete('/:id', async (req, res) => {
-  // delete on tag by its `id` value
-  try {
-    const deleteTag = await Tag.destroy({
+  router.delete('/:id', (req, res) => {
+    // delete on tag by its `id` value
+    Tag.destroy({
       where: {
         id: req.params.id
       }
     })
-    res.json(deleteTag)
-  } catch (error) {
-    res.status(500).json(error)
-  }
-});
+      .then(results => res.json(results))
+  });
 
 module.exports = router;
